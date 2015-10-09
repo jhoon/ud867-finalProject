@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">JokeTeller</string>
+    <string name="app_name">JokeTeller Library</string>
+
+    <string name="no_joke">Holy Guacamole! No joke to show!</string>
 </resources>
