@@ -3,7 +3,7 @@ package pe.jota.builditbigger.backend;
 /**
  * The object model for the data we are sending through endpoints
  */
-public class MyBean {
+public class JokeBean {
 
     private String myData;
 
