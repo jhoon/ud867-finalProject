@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -8,6 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+
+import java.io.IOException;
+
+import pe.jota.builditbigger.backend.myApi.MyApi;
 import pe.jota.joketeller.JokeActivity;
 
 
@@ -43,11 +52,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view){
-        // Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, JokeActivity.class);
-        intent.putExtra(JokeActivity.PARAM_JOKE, "THIS IS A JOKE");
-        startActivity(intent);
+        new JokeTask().execute();
     }
 
+    private class JokeTask extends AsyncTask<Void, Void, String>{
 
+        @Override
+        protected String doInBackground(Void... params) {
+            // Obtaining the ApiService, using the local ip address for the emulator
+            MyApi myApiService;
+            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
+                    new AndroidJsonFactory(),null)
+                    .setRootUrl("http://10.0.2.2:8080/_ah/api/");
+
+            myApiService = builder.build();
+
+            try {
+                // Obtains the string with the joke, returned form the AppEngine backend
+                return myApiService.getJoke().execute().getData();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String jokeString) {
+            super.onPostExecute(jokeString);
+
+            // Creating an intent and sending it to the next Activity (from the Library)
+            Intent intent = new Intent(MainActivity.this, JokeActivity.class);
+            intent.putExtra(JokeActivity.PARAM_JOKE, jokeString);
+            startActivity(intent);
+        }
+    }
 }

@@ -42,7 +42,7 @@ public class MyEndpoint {
     /**
      * A simple joke endpoint
      */
-    @ApiMethod(name = "tellJoke")
+    @ApiMethod(name = "getJoke")
     public JokeBean getJoke() {
         JokeBean response = new JokeBean();
         response.setData(JokeLibrary.getJoke());

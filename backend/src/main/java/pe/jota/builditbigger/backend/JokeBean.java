@@ -14,4 +14,8 @@ public class JokeBean {
     public void setData(String data) {
         myData = data;
     }
+
+    public JokeBean(){
+
+    }
 }
