@@ -13,6 +13,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.udacity.gradle.builditbigger.network.JokeTask;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ import pe.jota.builditbigger.backend.myApi.MyApi;
 import pe.jota.joketeller.JokeActivity;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements JokeTask.Callback {
     View mJokeCallerView;
 
     @Override
@@ -57,42 +58,19 @@ public class MainActivity extends AppCompatActivity {
         // and disabling it to prevent calling the backend multiple times
         mJokeCallerView = view;
         mJokeCallerView.setEnabled(false);
-        new JokeTask().execute();
+        JokeTask jokeTask = new JokeTask();
+        jokeTask.setCallback(this);
+        jokeTask.execute();
     }
 
-    private class JokeTask extends AsyncTask<Void, Void, String>{
+    @Override
+    public void onPostExecute(String jokeString) {
+        // enabling the view calling the joke, as it finished processing.
+        mJokeCallerView.setEnabled(true);
 
-
-        @Override
-        protected String doInBackground(Void... params) {
-            // Obtaining the ApiService, using the local ip address for the emulator
-            MyApi myApiService;
-            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(),null)
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/");
-
-            myApiService = builder.build();
-
-            try {
-                // Obtains the string with the joke, returned form the AppEngine backend
-                return myApiService.getJoke().execute().getData();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String jokeString) {
-            super.onPostExecute(jokeString);
-
-            // enabling the view calling the joke, as it finished processing.
-            mJokeCallerView.setEnabled(true);
-
-            // Creating an intent to open the next Activity (from the Library)
-            Intent intent = new Intent(MainActivity.this, JokeActivity.class);
-            intent.putExtra(JokeActivity.PARAM_JOKE, jokeString);
-            startActivity(intent);
-        }
+        // Creating an intent to open the next Activity (from the Library)
+        Intent intent = new Intent(MainActivity.this, JokeActivity.class);
+        intent.putExtra(JokeActivity.PARAM_JOKE, jokeString);
+        startActivity(intent);
     }
 }
