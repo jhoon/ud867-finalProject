@@ -21,6 +21,7 @@ import pe.jota.joketeller.JokeActivity;
 
 
 public class MainActivity extends AppCompatActivity {
+    View mJokeCallerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +53,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view){
+        // setting the view that is calling the tellJoke method
+        // and disabling it to prevent calling the backend multiple times
+        mJokeCallerView = view;
+        mJokeCallerView.setEnabled(false);
         new JokeTask().execute();
     }
 
     private class JokeTask extends AsyncTask<Void, Void, String>{
+
 
         @Override
         protected String doInBackground(Void... params) {
@@ -80,7 +86,10 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String jokeString) {
             super.onPostExecute(jokeString);
 
-            // Creating an intent and sending it to the next Activity (from the Library)
+            // enabling the view calling the joke, as it finished processing.
+            mJokeCallerView.setEnabled(true);
+
+            // Creating an intent to open the next Activity (from the Library)
             Intent intent = new Intent(MainActivity.this, JokeActivity.class);
             intent.putExtra(JokeActivity.PARAM_JOKE, jokeString);
             startActivity(intent);
