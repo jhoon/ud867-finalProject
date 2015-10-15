@@ -41,7 +41,7 @@ public class JokeTask extends AsyncTask<Void, Void, String> {
         MyApi myApiService;
         MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(),null)
-                .setRootUrl("http://10.0.2.2:8080/_ah/api/"); // Setting the local ip of appengine
+                .setRootUrl("https://sandbox-project-1022.appspot.com/_ah/api/"); // Setting the local ip of appengine
 
         myApiService = builder.build();
 
